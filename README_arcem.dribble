@@ -1,0 +1,30 @@
+ArcEm Dribble Readme
+--------------------
+
+The version of ArcEm from Dribble is launched using a wrapper script which is
+installed as "/usr/bin/arcem". If arcem is called with the parameter 'auto',
+or launched via the desktop menu entry then it will automatically setup an
+appropriate ArcEm environment for you. It will continue to use this environment
+everytime it's launched in this way. This environment is maintained in your
+homespace, in the .arcem directory. If ArcEm is launched without the auto
+parameter then it behaves verbatim and will not use that environment by
+default.
+
+The 'auto' parameter will:
+--------------------------
+* Ensure all of ArcEm's files are kept in and read from ~/.arcem
+* Setup all the supported extension modules, eg ScrollWheel support and
+  extended screenmodes.
+* Provide a virtual hard disc inside ArcEm (under RISC OS only) pointing
+  to your homespace.
+* Launch arcem with the 'ARM Linux' rom, unless a 'RISC OS 3.XX' rom is
+  present in ~/.arcem and called ROM.
+
+NOTE: RISC OS roms cannot be included with ArcEm for legal reasons. It is up to
+the end user to obtain these by a legal means. The 'ARM Linux' rom is largely
+included so you may see ArcEm running, but is probably of little practical use
+to most people.
+
+Please consult the ArcEm manual.html for further information on using floppy
+disc images and hard disc images etc. Remember to place these in ~/.arcem
+if you are using the auto environment.

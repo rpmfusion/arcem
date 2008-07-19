@@ -1,0 +1,55 @@
+--- arcem/Makefile.orig	2006-09-24 14:14:03.000000000 +0100
++++ arcem/Makefile	2007-06-13 20:03:22.000000000 +0100
+@@ -50,25 +50,17 @@
+ # Should stay as LITTLEEND when used in ArcEm
+ ENDIAN=LITTLEEND
+ 
+-WARN = -Wall -Wno-return-type -Wno-unknown-pragmas -Wshadow \
+-   -Wpointer-arith -Wcast-align -Wstrict-prototypes \
+-   -Wmissing-prototypes -Wmissing-declarations -Wnested-externs \
+-   -Wcast-qual -Wwrite-strings
+-
+-ifeq ($(PROFILE),yes)
+-CFLAGS = -O -g -pg -ftest-coverage -fprofile-arcs
+-else
+-CFLAGS = -O3 -funroll-loops -fexpensive-optimizations -ffast-math \
+-    -fomit-frame-pointer -frerun-cse-after-loop
+-endif
++WARN =
++
++RPMFLAGS =
+ 
+-CFLAGS += \
++CFLAGS = $(RPMFLAGS) \
+     -D$(ENDIAN) $(CFL) -DNOOS -DNOFPE $(WARN) \
+     -I$(SYSTEM) -Iarch -I.
+ 
+-prefix=/usr/local
++prefix=/usr
+ 
+-INSTALL_DIR = $(prefix)/bin
++INSTALL_DIR =
+ INSTALL=cp
+ 
+ 
+@@ -138,8 +130,8 @@
+ endif
+ 
+ ifeq (${SYSTEM},X)
+-CFLAGS += -DSYSTEM_X -I/usr/X11R6/include
+-LIBS += -L/usr/X11R6/lib -lXext -lX11
++CFLAGS += -DSYSTEM_X -I/usr/include/X11
++LIBS += -lXext -lX11
+ endif
+ 
+ ifeq (${SYSTEM},win)
+@@ -188,7 +180,8 @@
+ all: $(TARGET)
+ 
+ install: all
+-	$(INSTALL) armul $(INSTALL_DIR)
++	mkdir -p $(INSTALL_DIR)/$(prefix)/bin
++	$(INSTALL) arcem $(INSTALL_DIR)/$(prefix)/bin/arcem.bin
+ 
+ $(TARGET): $(OBJS) $(MODEL).o
+ 	$(LD) $(LDFLAGS) $(OBJS) $(LIBS) $(MODEL).o -o $@

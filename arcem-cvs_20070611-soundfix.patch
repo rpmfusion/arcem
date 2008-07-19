@@ -1,0 +1,11 @@
+--- arcem/X/sound.c.orig	2005-01-29 17:18:20.000000000 +0000
++++ arcem/X/sound.c	2007-08-08 17:53:12.000000000 +0100
+@@ -111,7 +111,7 @@
+ int
+ sound_init(void)
+ {
+-  if ((soundDevice = open("/dev/dsp", O_CREAT | O_WRONLY )) < 0) {
++  if ((soundDevice = open("/dev/dsp", O_WRONLY )) < 0) {
+     fprintf(stderr, "Could not open audio device /dev/dsp\n");
+     return -1;
+   }
