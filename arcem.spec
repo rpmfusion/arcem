@@ -7,7 +7,7 @@
 
 Name:           arcem
 Version:        1.10
-Release:        3.cvs_%{cvsdate}%{?dist}
+Release:        4.cvs_%{cvsdate}%{?dist}
 Summary:        Highly portable Acorn Archimedes emulator
 Group:          Applications/Emulators
 License:        GPLv2+
@@ -116,6 +116,9 @@ fi
 
 
 %changelog
+* Wed Jul 30 2008 Thorsten Leemhuis <fedora [AT] leemhuis [DOT] info - 1.10-4.cvs_20070611
+- rebuild for buildsys cflags issue
+
 * Wed Dec 12 2007 Ian Chapman <packages[AT]amiga-hardware.com> 1.10-3.cvs_20070611
 - Minor spec changes for devel
 
