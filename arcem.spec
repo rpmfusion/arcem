@@ -7,7 +7,7 @@
 
 Name:           arcem
 Version:        1.10
-Release:        5.cvs_%{cvsdate}%{?dist}
+Release:        6.cvs_%{cvsdate}%{?dist}
 Summary:        Highly portable Acorn Archimedes emulator
 Group:          Applications/Emulators
 License:        GPLv2+
@@ -116,6 +116,9 @@ fi
 
 
 %changelog
+* Wed Feb 08 2012 Nicolas Chauvet <kwizart@gmail.com> - 1.10-6.cvs_20070611
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_17_Mass_Rebuild
+
 * Sun Mar 29 2009 Thorsten Leemhuis <fedora [AT] leemhuis [DOT] info> - 1.10-5.cvs_20070611
 - rebuild for new F11 features
 
