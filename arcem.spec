@@ -1,30 +1,26 @@
-# The source is retrieved from cvs:
-# cvs -z3 -d:pserver:anonymous@arcem.cvs.sourceforge.net:/cvsroot/arcem co -P arcem
-# The arcem directory should be compressed as the following:
-# arcem-cvs_YYYYMMDD.tar.bz2
-
-%define         cvsdate 20070611
-
 Name:           arcem
-Version:        1.10
-Release:        6.cvs_%{cvsdate}%{?dist}
+Version:        1.50
+Release:        1%{?dist}
 Summary:        Highly portable Acorn Archimedes emulator
-Group:          Applications/Emulators
+
 License:        GPLv2+
 URL:            http://arcem.sourceforge.net
-Source0:        %{name}-cvs_%{cvsdate}.tar.bz2
+Source0:        http://downloads.sourceforge.net/%{name}/%{name}-%{version}-src.zip
+# ARMLinux Rom Image - kernel v2.2
 Source1:        http://arcem.sourceforge.net/linuxrom.zip
+# Wrapper script
 Source2:        arcem.sh
+# RPM Fusion README
 Source3:        README_arcem.dribble
-Patch0:         arcem-cvs_20070611-improvemakefile.patch
-Patch1:         arcem-cvs_20070611-uichanges.patch
-Patch2:         arcem-cvs_20070611-manual.patch
-Patch3:         arcem-cvs_20070611-soundfix.patch
-BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
+# User manual
+Source4:        http://arcem.sourceforge.net/manual/%{name}-%{version}.html
+# Makefile patch
+Patch0:         arcem-1.50-Makefile.patch
+
 BuildRequires:  desktop-file-utils
-BuildRequires:  ImageMagick
 BuildRequires:  libX11-devel
 BuildRequires:  libXext-devel
+BuildRequires:  libicns-utils
 Requires:       hicolor-icon-theme
 Requires:       xorg-x11-apps
 
@@ -36,25 +32,26 @@ ARM Linux ROM to fully function. Only the Linux ROM can be legally included.
 
 
 %prep
-%setup -qn %{name}
+%setup -qn %{name}-src
 # Makefile is heavily patched because it's largely broken in many ways
 %patch0 -p1
-%patch1 -p1
-%patch2 -p1
-%patch3 -p1
 unzip -qq %{SOURCE1}
+
+# Place the user manual
+install -pm0644 %{SOURCE4} manual.html 
+
+# Place RPM Fusion README
+install -pm0644 %{SOURCE3} .
+
+# Fix premissions
+chmod 644 docs/*
+find . -type f -name "*.h" -exec chmod 644 {} \;
+find . -type f -name "*.c" -exec chmod 644 {} \;
 
 
 %build
-# Sound support seems stable but experimental, but largely doesn't work on PPC
-%ifarch %{ix86} x86_64
-    make %{?_smp_mflags} RPMFLAGS="%{optflags}" SOUND_SUPPORT=yes
-%else
-    make %{?_smp_mflags} RPMFLAGS="%{optflags}" HOST_BIGENDIAN=yes
-%endif
-
-#Build icon image
-convert win/arc.ico %{name}.png
+export CFLAGS="%{optflags}"
+make %{?_smp_mflags} SOUND_SUPPORT=yes
 
 # Build desktop icon
 cat >%{name}.desktop <<EOF
@@ -74,35 +71,53 @@ EOF
 
 %install
 rm -rf %{buildroot}
-make install INSTALL_DIR=%{buildroot}
-mkdir -p %{buildroot}%{_datadir}/%{name}/{modules,linuxrom}
-mkdir -p %{buildroot}%{_datadir}/icons/hicolor/32x32/apps
-install -pm0644 support_modules/*/*,ffa %{buildroot}%{_datadir}/%{name}/modules
+make install INSTALL_DIR=%{buildroot} prefix=%{_prefix}
+
+# Install default configuration file
+mkdir -p %{buildroot}%{_datadir}/%{name}
+install -pm0644 arcemrc %{buildroot}%{_datadir}/%{name}
+
+# Install ARMLinux Rom Image
+mkdir -p %{buildroot}%{_datadir}/%{name}/linuxrom
 install -pm0644 ROM.linux %{buildroot}%{_datadir}/%{name}/linuxrom/ROM
+
+# Install modules
+mkdir -p %{buildroot}%{_datadir}/%{name}/modules
+install -pm0644 support_modules/*/*,ffa %{buildroot}%{_datadir}/%{name}/modules
+
+# Install wrapper script
+mv %{buildroot}%{_bindir}/%{name} %{buildroot}%{_bindir}/%{name}.bin
 install -pm0755 %{SOURCE2} %{buildroot}%{_bindir}/%{name}
-install -pm0644 %{name}-0.png %{buildroot}%{_datadir}/icons/hicolor/32x32/apps/%{name}.png
-install -pm0644 %{SOURCE3} .
+
+# Extract Mac OS X icons
+icns2png -x macosx/%{name}.icns 
+
+# Install icons
+for i in 128; do
+  install -d -m 755 %{buildroot}%{_datadir}/icons/hicolor/${i}x${i}/apps
+  install -m 644 %{name}_${i}x${i}x32.png \
+    %{buildroot}%{_datadir}/icons/hicolor/${i}x${i}/apps/%{name}.png
+done
+
+# Install desktop files
 desktop-file-install --vendor dribble \
     --dir %{buildroot}%{_datadir}/applications \
     %{name}.desktop
 
 
-%clean
-rm -rf %{buildroot}
-
-
 %post
-touch --no-create %{_datadir}/icons/hicolor
-if [ -x %{_bindir}/gtk-update-icon-cache ]; then
-%{_bindir}/gtk-update-icon-cache --quiet %{_datadir}/icons/hicolor || :
-fi
+touch --no-create %{_datadir}/icons/hicolor &>/dev/null || :
 
 
 %postun
-touch --no-create %{_datadir}/icons/hicolor
-if [ -x %{_bindir}/gtk-update-icon-cache ]; then
-%{_bindir}/gtk-update-icon-cache --quiet %{_datadir}/icons/hicolor || :
+if [ $1 -eq 0 ] ; then
+    touch --no-create %{_datadir}/icons/hicolor &>/dev/null
+    gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 fi
+
+
+%posttrans
+gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 
 
 %files
@@ -111,11 +126,17 @@ fi
 %{_bindir}/%{name}.bin
 %{_datadir}/%{name}
 %{_datadir}/applications/dribble-%{name}.desktop
-%{_datadir}/icons/hicolor/32x32/apps/%{name}.png
-%doc docs/5thColumn.txt docs/COPYING index.html manual.html README_arcem.dribble
+%{_datadir}/icons/hicolor/*/apps/%{name}.png
+%doc docs/5thColumn.txt docs/COPYING manual.html README_arcem.dribble
 
 
 %changelog
+* Wed Jan 02 2013 Andrea Musuruane <musuruan@gmail.com> 1.50-1
+- Updated to 1.50
+- Specfile update and cleanup
+- Dropped archs no longer supported by Fedora/RPM Fusion
+- Used MacOS X icns instead of the Windows ico
+
 * Wed Feb 08 2012 Nicolas Chauvet <kwizart@gmail.com> - 1.10-6.cvs_20070611
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_17_Mass_Rebuild
 

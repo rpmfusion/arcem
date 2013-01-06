@@ -1,0 +1,59 @@
+diff -durN arcem-src.orig/Makefile arcem-src/Makefile
+--- arcem-src.orig/Makefile	2012-12-13 00:41:33.000000000 +0100
++++ arcem-src/Makefile	2013-01-02 16:06:59.259726183 +0100
+@@ -56,24 +56,24 @@
+    -Wcast-qual -Wwrite-strings -Wno-unused
+ 
+ ifeq ($(PROFILE),yes)
+-CFLAGS = -O -g -pg -ftest-coverage -fprofile-arcs
++CFLAGS ?= -O -g -pg -ftest-coverage -fprofile-arcs
+ LIBS += -lgcov
+ else
+ ifeq ($(DEBUG),yes)
+ CFLAGS += -O0 -g
+ else
+-CFLAGS = -O3 -funroll-loops -fexpensive-optimizations -ffast-math \
++CFLAGS ?= -O3 -funroll-loops -fexpensive-optimizations -ffast-math \
+     -fomit-frame-pointer -frerun-cse-after-loop
+ endif
+ endif
+ 
+ CFLAGS += \
+-    $(CFL) $(WARN) \
++    $(WARN) \
+     -I$(SYSTEM) -Iarch -I.
+ 
+ prefix=/usr/local
+ 
+-INSTALL_DIR = $(prefix)/bin
++INSTALL_DIR = 
+ INSTALL=cp
+ 
+ 
+@@ -174,11 +174,11 @@
+ endif
+ 
+ ifeq (${SYSTEM},X)
+-CFLAGS += -DSYSTEM_X -I/usr/X11R6/include
++CFLAGS += -DSYSTEM_X -I/usr/include/X11
+ ifneq ($(shell uname),Darwin)
+ CFLAGS += -D_LARGEFILE_SOURCE -D_LARGEFILE64_SOURCE -D_FILE_OFFSET_BITS=64
+ endif
+-LIBS += -L/usr/X11R6/lib -lXext -lX11
++LIBS += -lXext -lX11
+ OBJS += X/true.o X/pseudo.o
+ #SOUND_SUPPORT = yes
+ endif
+@@ -228,8 +228,9 @@
+ all: $(TARGET)
+ 
+ install: all
+-	$(INSTALL) $(TARGET) $(INSTALL_DIR)
+-	f=arcemrc; test -f $$HOME/.$$f || $(INSTALL) $$f $(HOME)/.$$f
++	mkdir -p $(INSTALL_DIR)/$(prefix)/bin
++	$(INSTALL) $(TARGET) $(INSTALL_DIR)/$(prefix)/bin
++	#f=arcemrc; test -f $$HOME/.$$f || $(INSTALL) $$f $(HOME)/.$$f
+ 
+ $(TARGET): $(OBJS) $(MODEL).o
+ 	$(LD) $(LDFLAGS) $(OBJS) $(LIBS) $(MODEL).o -o $@
+I file binari arcem-src.orig/.Makefile.swp e arcem-src/.Makefile.swp sono diversi
