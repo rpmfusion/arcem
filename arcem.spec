@@ -1,6 +1,6 @@
 Name:           arcem
 Version:        1.50
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Highly portable Acorn Archimedes emulator
 
 License:        GPLv2+
@@ -70,7 +70,6 @@ EOF
 
 
 %install
-rm -rf %{buildroot}
 make install INSTALL_DIR=%{buildroot} prefix=%{_prefix}
 
 # Install default configuration file
@@ -100,7 +99,7 @@ for i in 128; do
 done
 
 # Install desktop files
-desktop-file-install --vendor dribble \
+desktop-file-install \
     --dir %{buildroot}%{_datadir}/applications \
     %{name}.desktop
 
@@ -125,12 +124,16 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %{_bindir}/%{name}
 %{_bindir}/%{name}.bin
 %{_datadir}/%{name}
-%{_datadir}/applications/dribble-%{name}.desktop
+%{_datadir}/applications/%{name}.desktop
 %{_datadir}/icons/hicolor/*/apps/%{name}.png
 %doc docs/5thColumn.txt docs/COPYING manual.html README_arcem.dribble
 
 
 %changelog
+* Mon Oct 28 2013 Andrea Musuruane <musuruan@gmail.com> 1.50-2
+- Dropped desktop vendor tag for F19+
+- Dropped cleaning at the beginning of %%install
+
 * Wed Jan 02 2013 Andrea Musuruane <musuruan@gmail.com> 1.50-1
 - Updated to 1.50
 - Specfile update and cleanup
