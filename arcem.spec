@@ -1,6 +1,6 @@
 Name:           arcem
 Version:        1.50
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        Highly portable Acorn Archimedes emulator
 
 License:        GPLv2+
@@ -130,6 +130,9 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 
 
 %changelog
+* Sat Aug 30 2014 Sérgio Basto <sergio@serjux.com> - 1.50-3
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_21_22_Mass_Rebuild
+
 * Mon Oct 28 2013 Andrea Musuruane <musuruan@gmail.com> 1.50-2
 - Dropped desktop vendor tag for F19+
 - Dropped cleaning at the beginning of %%install
