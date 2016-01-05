@@ -1,8 +1,8 @@
-ArcEm Dribble Readme
+ArcEm Fedora Readme
 --------------------
 
-The version of ArcEm from Dribble is launched using a wrapper script which is
-installed as "/usr/bin/arcem". If arcem is called with the parameter 'auto',
+The version of ArcEm from RPM Fusion is launched using a wrapper script which 
+is installed as "/usr/bin/arcem". If arcem is called with the parameter 'auto',
 or launched via the desktop menu entry then it will automatically setup an
 appropriate ArcEm environment for you. It will continue to use this environment
 everytime it's launched in this way. This environment is maintained in your
@@ -28,3 +28,4 @@ to most people.
 Please consult the ArcEm manual.html for further information on using floppy
 disc images and hard disc images etc. Remember to place these in ~/.arcem
 if you are using the auto environment.
+

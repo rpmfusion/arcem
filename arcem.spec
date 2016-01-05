@@ -1,6 +1,6 @@
 Name:           arcem
-Version:        1.50
-Release:        3%{?dist}
+Version:        1.50.1
+Release:        1%{?dist}
 Summary:        Highly portable Acorn Archimedes emulator
 
 License:        GPLv2+
@@ -9,18 +9,23 @@ Source0:        http://downloads.sourceforge.net/%{name}/%{name}-%{version}-src.
 # ARMLinux Rom Image - kernel v2.2
 Source1:        http://arcem.sourceforge.net/linuxrom.zip
 # Wrapper script
-Source2:        arcem.sh
+Source2:        %{name}.sh
 # RPM Fusion README
-Source3:        README_arcem.dribble
+Source3:        README_%{name}.Fedora
 # User manual
-Source4:        http://arcem.sourceforge.net/manual/%{name}-%{version}.html
+Source4:        http://arcem.sourceforge.net/manual/%{name}-1.50.html
+Source5:        %{name}.desktop
+# Appdata by Richard Hughes
+# http://sourceforge.net/p/arcem/bugs/18/
+Source6:        %{name}.appdata.xml
 # Makefile patch
-Patch0:         arcem-1.50-Makefile.patch
+Patch0:         %{name}-1.50-Makefile.patch
 
-BuildRequires:  desktop-file-utils
 BuildRequires:  libX11-devel
 BuildRequires:  libXext-devel
 BuildRequires:  libicns-utils
+BuildRequires:  libappstream-glib
+BuildRequires:  desktop-file-utils
 Requires:       hicolor-icon-theme
 Requires:       xorg-x11-apps
 
@@ -53,21 +58,6 @@ find . -type f -name "*.c" -exec chmod 644 {} \;
 export CFLAGS="%{optflags}"
 make %{?_smp_mflags} SOUND_SUPPORT=yes
 
-# Build desktop icon
-cat >%{name}.desktop <<EOF
-[Desktop Entry]
-Encoding=UTF-8
-Name=Arcem
-GenericName=Acorn Archimedes Emulator
-Comment=%{summary}
-Exec=%{name} auto
-Icon=%{name}
-Terminal=false
-Type=Application
-StartupNotify=false
-Categories=Game;Emulator;
-EOF
-
 
 %install
 make install INSTALL_DIR=%{buildroot} prefix=%{_prefix}
@@ -98,38 +88,52 @@ for i in 128; do
     %{buildroot}%{_datadir}/icons/hicolor/${i}x${i}/apps/%{name}.png
 done
 
-# Install desktop files
+# Install desktop file
+install -d %{buildroot}%{_datadir}/applications
 desktop-file-install \
-    --dir %{buildroot}%{_datadir}/applications \
-    %{name}.desktop
+  --dir %{buildroot}%{_datadir}/applications \
+  %{SOURCE5}
+
+# Install appdata
+install -d %{buildroot}%{_datadir}/appdata
+install -p -m 0644 %{SOURCE6} \
+  %{buildroot}%{_datadir}/appdata
+appstream-util validate-relax --nonet \
+  %{buildroot}%{_datadir}/appdata/*.appdata.xml
 
 
 %post
-touch --no-create %{_datadir}/icons/hicolor &>/dev/null || :
+/bin/touch --no-create %{_datadir}/icons/hicolor &>/dev/null || :
 
 
 %postun
 if [ $1 -eq 0 ] ; then
-    touch --no-create %{_datadir}/icons/hicolor &>/dev/null
-    gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
+    /bin/touch --no-create %{_datadir}/icons/hicolor &>/dev/null
+    /usr/bin/gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 fi
 
 
 %posttrans
-gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
+/usr/bin/gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 
 
 %files
-%defattr(-,root,root,-)
 %{_bindir}/%{name}
 %{_bindir}/%{name}.bin
 %{_datadir}/%{name}
 %{_datadir}/applications/%{name}.desktop
 %{_datadir}/icons/hicolor/*/apps/%{name}.png
-%doc docs/5thColumn.txt docs/COPYING manual.html README_arcem.dribble
+%{_datadir}/appdata/%{name}.appdata.xml
+%doc docs/5thColumn.txt manual.html README_arcem.Fedora
+%license docs/COPYING
 
 
 %changelog
+* Tue Jan 05 2016 Andrea Musuruane <musuruan@gmail.com> - 1.50.1-1
+- Updated to 1.50.1
+- Added appdata thanks to Richard Hughes
+- Spec file clean up
+
 * Sat Aug 30 2014 Sérgio Basto <sergio@serjux.com> - 1.50-3
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_21_22_Mass_Rebuild
 

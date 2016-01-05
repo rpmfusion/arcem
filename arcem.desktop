@@ -1,0 +1,11 @@
+[Desktop Entry]
+Name=Arcem
+GenericName=Acorn Archimedes Emulator
+Comment=Highly portable Acorn Archimedes emulator
+Exec=arcem auto
+Icon=arcem
+Terminal=false
+Type=Application
+StartupNotify=false
+Categories=Game;Emulator;
+
