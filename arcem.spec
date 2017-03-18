@@ -1,6 +1,6 @@
 Name:           arcem
 Version:        1.50.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Highly portable Acorn Archimedes emulator
 
 License:        GPLv2+
@@ -129,6 +129,9 @@ fi
 
 
 %changelog
+* Sat Mar 18 2017 RPM Fusion Release Engineering <kwizart@rpmfusion.org> - 1.50.1-2
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_26_Mass_Rebuild
+
 * Tue Jan 05 2016 Andrea Musuruane <musuruan@gmail.com> - 1.50.1-1
 - Updated to 1.50.1
 - Added appdata thanks to Richard Hughes
