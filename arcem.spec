@@ -21,6 +21,7 @@ Source6:        %{name}.appdata.xml
 # Makefile patch
 Patch0:         %{name}-1.50-Makefile.patch
 
+BuildRequires:  gcc
 BuildRequires:  libX11-devel
 BuildRequires:  libXext-devel
 BuildRequires:  libicns-utils
