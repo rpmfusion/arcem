@@ -1,6 +1,6 @@
 Name:           arcem
 Version:        1.50.2
-Release:        10%{?dist}
+Release:        11%{?dist}
 Summary:        Highly portable Acorn Archimedes emulator
 
 License:        GPLv2+
@@ -28,7 +28,6 @@ BuildRequires:  libicns-utils
 BuildRequires:  libappstream-glib
 BuildRequires:  desktop-file-utils
 Requires:       hicolor-icon-theme
-Requires:       xorg-x11-apps
 
 %description
 ArcEm is a Acorn Archimedes A400 hardware emulator that is highly portable. As
@@ -56,8 +55,8 @@ find . -type f -name "*.c" -exec chmod 644 {} \;
 
 
 %build
-export CFLAGS="%{optflags}"
-make %{?_smp_mflags} SOUND_SUPPORT=yes
+%set_build_flags
+%make_build SOUND_SUPPORT=yes
 
 
 %install
@@ -96,26 +95,10 @@ desktop-file-install \
   %{SOURCE5}
 
 # Install appdata
-install -d %{buildroot}%{_datadir}/appdata
-install -p -m 0644 %{SOURCE6} \
-  %{buildroot}%{_datadir}/appdata
+install -d %{buildroot}%{_metainfodir}
+install -p -m 0644 %{SOURCE6} %{buildroot}%{_metainfodir}
 appstream-util validate-relax --nonet \
-  %{buildroot}%{_datadir}/appdata/*.appdata.xml
-
-
-%post
-/bin/touch --no-create %{_datadir}/icons/hicolor &>/dev/null || :
-
-
-%postun
-if [ $1 -eq 0 ] ; then
-    /bin/touch --no-create %{_datadir}/icons/hicolor &>/dev/null
-    /usr/bin/gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
-fi
-
-
-%posttrans
-/usr/bin/gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
+  %{buildroot}%{_metainfodir}/%{name}.appdata.xml
 
 
 %files
@@ -124,12 +107,16 @@ fi
 %{_datadir}/%{name}
 %{_datadir}/applications/%{name}.desktop
 %{_datadir}/icons/hicolor/*/apps/%{name}.png
-%{_datadir}/appdata/%{name}.appdata.xml
+%{_metainfodir}/%{name}.appdata.xml
 %doc docs/5thColumn.txt manual.html README_arcem.Fedora
 %license docs/COPYING
 
 
 %changelog
+* Mon Aug 09 2021 Andrea Musuruane <musuruan@gmail.com> - 1.50.2-11
+- Remove not needed dependency (BZ #6022)
+- Clean up
+
 * Mon Aug 02 2021 RPM Fusion Release Engineering <leigh123linux@gmail.com> - 1.50.2-10
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_35_Mass_Rebuild
 
