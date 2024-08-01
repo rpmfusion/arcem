@@ -39,7 +39,7 @@ ARM Linux ROM to fully function. Only the Linux ROM can be legally included.
 %prep
 %setup -qn %{name}-src
 # Makefile is heavily patched because it's largely broken in many ways
-%patch0 -p1
+%patch -P0 -p1
 unzip -qq %{SOURCE1}
 
 # Place the user manual
